@@ -1,70 +1,82 @@
-# Getting Started with Create React App
+# 🛍️ Shopcase — E-commerce React Web App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Shopcase** is a modern, responsive e-commerce website built with ReactJS. It provides an intuitive shopping experience with category browsing, cart management, and user login support. Designed to mimic a real-world online shopping platform, this project showcases frontend skills and clean UI principles.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+- 🧾 Category-based product browsing (Men, Women, Kids)
+- 🛒 Add to cart, view cart item count
+- 🔐 Login and Signup page (frontend only)
+- 🌐 Responsive design (Mobile, Tablet & Desktop)
+- 🔄 React Router for seamless navigation
+- 🧠 Global state managed using Context API
+- 📦 Component-based architecture with reusable elements
 
-Runs the app in the development mode.\
+---
+
+## 🧰 Tech Stack
+
+- ReactJS (with Hooks)
+- React Router DOM
+- JavaScript (ES6+)
+- Context API for state management
+- Custom CSS with variables and media queries
+
+---
+
+## 📁 Project Folder Structure
+
+shopcase/
+├── public/
+│ ├── favicon.ico
+│ └── index.html
+├── src/
+│ ├── assets/ # Images, banners
+│ ├── components/ # Navbar, Footer, ProductCard, etc.
+│ ├── pages/ # Home, LoginSignup, Category, Cart
+│ ├── Context/ # ShopContext for global state
+│ ├── App.jsx # Root component
+│ └── index.js # Entry point
+├── package.json
+└── README.md
+
+---
+
+## 🛠️ Installation & Setup
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/yourusername/shopcase.git
+cd shopcase
+npm install
+npm start
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📷 Screenshots
 
-### `npm test`
+### 🏠 Home Page
+![Home Page](./src/assests/Homepage.png)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 👕 Category Page (Men/Women/Kids)
+![Category Page](./src/assests/Categorypage.png)
 
-### `npm run build`
+### 🛒 Cart Page
+![Cart Page](./src/assests/Cartpage.png)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 🔐 Login Page
+![Login Page](./src/assests/Loginpage.png)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 🔐 Popular Page
+![Popular Page](./src/assests/Popularpage.png)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 🔐 Checkout Page
+![Checkout Page](./src/assests/Checkoutpage.png)
 
-### `npm run eject`
+## 🙋‍♀️ Author
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Made with 💖 by **Aparna Mishra**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- [GitHub](https://github.com/aparna21400)

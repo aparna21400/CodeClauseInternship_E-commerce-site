@@ -1,0 +1,269 @@
+/* ===== GLOBAL CONTAINER & TEXT WIDTH CONTROL ===== */
+.container {
+  width: 100%;
+  max-width: 1300px;
+  margin: auto;
+  padding: 0 140px;
+}
+
+.responsive-heading {
+  font-size: 50px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.responsive-text {
+  font-size: 20px;
+  color: var(--text-medium);
+}
+
+/* ===== GRID/FLEX RESPONSIVENESS ===== */
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 30px;
+}
+
+/* ===== IMAGE SCALING ===== */
+.responsive-img {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+@media screen and (max-width: 1200px) {
+  .container {
+    padding: 0 100px;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .container {
+    padding: 0 60px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 0 30px;
+  }
+
+  .responsive-heading {
+    font-size: 34px;
+  }
+
+  .responsive-text {
+    font-size: 18px;
+  }
+
+  .category-indexSort,
+  .offers,
+  .popular-item,
+  .footer,
+  .newsletter {
+    flex-direction: column !important;
+    text-align: center;
+    align-items: center !important;
+  }
+
+  .productdisplay {
+    flex-direction: column;
+  }
+
+  .productdisplay-left {
+    flex-direction: column;
+  }
+
+  .cartitems-down {
+    flex-direction: column;
+    padding: 0 20px;
+  }
+
+  .cartitems-total {
+    margin: 0;
+    width: 100%;
+  }
+
+  .cartitems-promobox {
+    width: 100%;
+  }
+
+  .newsletter div {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .newsletter input,
+  .newsletter button {
+    width: 100%;
+    height: 50px;
+  }
+
+  /* Login/Signup responsive styles */
+  .loginSignup {
+    padding: 50px 0 30px; /* Reduced padding on mobile */
+    min-height: auto; /* Remove min-height constraint on mobile */
+  }
+
+  .loginsignup-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 30px 20px;
+    margin: 20px auto;
+  }
+
+  .loginsignup-fields input {
+    height: 60px;
+    font-size: 16px;
+  }
+
+  .loginsignup-container button {
+    height: 60px;
+    font-size: 20px;
+  }
+
+  .loginsignup-login {
+    font-size: 16px;
+  }
+
+  .loginsignup-agree {
+    font-size: 16px;
+    gap: 15px;
+  }
+
+  /* Footer mobile styles */
+  .footer {
+    padding: 40px 20px 20px;
+    gap: 30px;
+  }
+
+  .footer-logo p {
+    font-size: 1.5rem;
+  }
+
+  .footer-links {
+    gap: 15px;
+    font-size: 0.9rem;
+  }
+
+  .footer-social-icon {
+    gap: 10px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .responsive-heading {
+    font-size: 28px;
+  }
+
+  .productdisplay-img-list {
+    flex-direction: row;
+    overflow-x: scroll;
+  }
+
+  .cartitems-format-main {
+    display: none;
+  }
+
+  .cartitem-format {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
+  }
+
+  .cartitems-quantity {
+    height: 40px;
+    width: 50px;
+  }
+
+  /* Additional mobile styles for login/signup */
+  .loginSignup {
+    padding: 30px 0 20px;
+  }
+
+  .loginsignup-container {
+    padding: 20px 16px;
+    margin: 10px;
+  }
+
+  .loginsignup-fields input {
+    height: 50px;
+    font-size: 14px;
+    padding-left: 15px;
+  }
+
+  .loginsignup-container button {
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .loginsignup-login {
+    font-size: 14px;
+  }
+
+  .loginsignup-agree {
+    font-size: 14px;
+    gap: 10px;
+  }
+
+  /* Footer mobile styles */
+  .footer {
+    padding: 30px 16px 15px;
+    gap: 20px;
+  }
+
+  .footer-logo p {
+    font-size: 1.3rem;
+  }
+
+  .footer-links {
+    gap: 12px;
+    font-size: 0.8rem;
+  }
+
+  .footer-social-icon {
+    gap: 8px;
+  }
+
+  .footer-icons-container {
+    padding: 8px;
+  }
+
+  .footer-icons-container img {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .banner-container {
+    flex-direction: column;
+    padding: 20px 16px;
+    text-align: center;
+  }
+
+  .category-indexSort {
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 10px 16px;
+    gap: 10px;
+  }
+
+  .category-sort {
+    width: 100%;
+    text-align: center;
+  }
+}
