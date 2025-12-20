@@ -1,0 +1,44 @@
+.App {
+  background: var(--color-background);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+.main-content {
+  margin-top: 85px;
+}
+
+:root {
+  --primary-green: #2D5A3D;
+  --primary-green-dark: #1F3D2A;
+
+  --coral-red: #FF6B6B;
+  --bright-red: #E53E3E;
+  --orange-accent: #FF8C00;
+
+  --background-beige: #F5E6D3;
+  --background-cream: #FAF5F0;
+  --white: #FFFFFF;
+  --light-gray: #F8F9FA;
+  --medium-gray: #E9ECEF;
+  --dark-gray: #6C757D;
+  --text-dark: #212529;
+  --text-medium: #495057;
+
+  --btn-primary: #2D5A3D;
+  --btn-primary-hover: #1F3D2A;
+  --btn-outline: transparent;
+  --btn-outline-border: #2D5A3D;
+
+  --price-color: #2D5A3D;
+  --discount-color: #E53E3E;
+  --star-filled: #FFD700;
+}

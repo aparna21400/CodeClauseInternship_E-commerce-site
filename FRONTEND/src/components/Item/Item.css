@@ -1,0 +1,46 @@
+.item {
+    width: 100%;
+    max-width: 100%;
+    background: var(--card-background);
+    border-radius: 8px;
+    transition: transform 0.2s;
+    white-space: normal;  
+}
+
+
+.item p {
+    margin: 10px 5px;
+    color: var(--text-dark);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.item img {
+    width: 100%;
+    height: auto;
+}
+
+.item-prices {
+    display: flex;
+    gap: 20px;
+}
+
+.item-price-new {
+    color: var(--price-color);
+    font-size: 18px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.item-price-old {
+    color: var(--text-medium);
+    font-size: 18px;
+    font-weight: 500;
+    margin-left: 10px;
+    text-decoration: line-through;
+}
+
+.item:hover {
+    transform: scale(1.05);
+    transition: 0.3s;
+}
