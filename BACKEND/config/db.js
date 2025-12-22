@@ -9,7 +9,7 @@ const connectDB = async () => {
     }
 
     mongoose.connection.on("connected", () => {
-      console.log("✅ MongoDB CONNECTED");
+      console.log("MongoDB CONNECTED");
     });
     await mongoose.connect(`${process.env.MONGO_URL}/shopcase`)
   } catch (err) {
