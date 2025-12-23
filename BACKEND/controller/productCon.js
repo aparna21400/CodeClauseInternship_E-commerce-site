@@ -1,5 +1,6 @@
 import productModel from "../models/product.js";
 import { v2 as cloudinary } from "cloudinary"
+
 // func to add product
 const add = async (req, res) => {
     try {
@@ -19,20 +20,34 @@ const add = async (req, res) => {
                 return result.secure_url
             })
         )
-
+        let parsedSize = [];
+        if (size) {
+            try {
+                parsedSize = JSON.parse(size.replace(/'/g, '"')); // replace single quotes with double quotes
+            } catch (err) {
+                console.error("Invalid size format, using empty array", size);
+            }
+        }
         const productData = {
             name,
             description,
             category,
             old_price: Number(old_price),
             new_price: Number(new_price),
-            size: JSON.parse(size)
+            size: parsedSize,
+            image: imageUrl
         }
+        console.log(productData);
+
+        const product = new productModel(productData)
+        await product.save();
+
+        res.json({ success: true, message: "Product have been saved!" })
+
 
         console.log(name, description, old_price, new_price, category, size)
         console.log(imageUrl);
 
-        res.json({})
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })
@@ -41,17 +56,39 @@ const add = async (req, res) => {
 
 // func to list product
 const list = async (req, res) => {
-
+    try {
+        const products = await productModel.find({});
+        res.json({ success: true, products })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
 }
 
 // func to remove product
 const remove = async (req, res) => {
+    try {
+        const { id } = req.params;
 
-}
+        await productModel.findByIdAndDelete(id);
+
+        res.json({ success: true, message: "Product removed" });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
 
 // func to singleProductInfo product
 const singleProductInfo = async (req, res) => {
+    try {
+    const { productId } = req.body
+        const product = await productModel.findById(productId);
+        res.json({ success: true, product });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
 
-}
 
 export { list, add, remove, singleProductInfo }

@@ -62,7 +62,7 @@ const registerUser = async (req, res) => {
         const user = await newUser.save()
 
         const token = createToken(user._id)
-        
+
         res.json({ success: true, token })
 
     } catch (error) {
@@ -72,6 +72,18 @@ const registerUser = async (req, res) => {
 }
 // route for admin login
 const adminLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body
 
+        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+            const token = jwt.sign(email + password, process.env.JWT_SECRET);
+            res.json({ success: true, token })
+        } else {
+            res.json({ sucess: false, message: "Invalid cresentials" })
+        }
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message })
+    }
 }
 export { loginUser, registerUser, adminLogin }

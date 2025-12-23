@@ -9,6 +9,6 @@ const productSchema = new mongoose.Schema({
     size: { type: Array, required: true },
 });
 
-const productModel = mongoose.model.product || mongoose.model('Product', productSchema);
+const productModel = mongoose.models.product || mongoose.model('Product', productSchema);
 
 export default productModel;
