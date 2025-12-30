@@ -1,12 +1,34 @@
+import axios from 'axios'
 import React, { useState } from 'react'
+import { backendUrl } from '../App';
+import { toast } from 'react-toastify';
 
-const Login = () => {
+const Login = ({ setToken }) => {
 
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleSubmit = async (e) => {
+        try {
+            e.preventDefault();
+            const response = await axios.post(backendUrl + '/api/user/admin', { email, password })
+            if (response.data.success) {
+                setToken(response.data.token)
+            } else {
+                toast.error(response.data.message)
+            }
+
+        } catch (error) {
+            console.log(error);
+            toast.error(error.message);
+
+        }
+    };
     return (
-        <div style={{ 
-            minHeight: '100vh', 
-            display: 'flex', 
-            alignItems: 'center', 
+        <div style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: '#f9fafb'
         }}>
@@ -22,19 +44,19 @@ const Login = () => {
                 <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>
                     Admin Panel
                 </h1>
-                
+
                 <form onSubmit={handleSubmit}>
                     <div style={{ marginBottom: '16px' }}>
-                        <label style={{ 
-                            display: 'block', 
-                            fontSize: '14px', 
+                        <label style={{
+                            display: 'block',
+                            fontSize: '14px',
                             fontWeight: '600',
                             marginBottom: '8px',
                             color: '#374151'
                         }}>
                             Email Address
                         </label>
-                        <input 
+                        <input
                             style={{
                                 width: '100%',
                                 padding: '10px 12px',
@@ -43,27 +65,27 @@ const Login = () => {
                                 outline: 'none',
                                 fontSize: '14px'
                             }}
-                            type="email" 
-                            placeholder='your@email.com' 
+                            type="email"
+                            placeholder='your@email.com'
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
                             onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
-                            required 
+                            required
                         />
                     </div>
-                    
+
                     <div style={{ marginBottom: '20px' }}>
-                        <label style={{ 
-                            display: 'block', 
-                            fontSize: '14px', 
+                        <label style={{
+                            display: 'block',
+                            fontSize: '14px',
                             fontWeight: '600',
                             marginBottom: '8px',
                             color: '#374151'
                         }}>
                             Password
                         </label>
-                        <input 
+                        <input
                             style={{
                                 width: '100%',
                                 padding: '10px 12px',
@@ -72,17 +94,17 @@ const Login = () => {
                                 outline: 'none',
                                 fontSize: '14px'
                             }}
-                            type="password" 
-                            placeholder='Enter your password' 
+                            type="password"
+                            placeholder='Enter your password'
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
                             onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
-                            required 
+                            required
                         />
                     </div>
-                    
-                    <button 
+
+                    <button
                         type='submit'
                         style={{
                             width: '100%',
