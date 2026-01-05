@@ -1,5 +1,5 @@
 import express from 'express'
-import { list, add, remove, singleProductInfo } from '../controller/productCon.js';
+import { list, add, remove, singleProductInfo, getProductById, getProductsByCategory } from '../controller/productCon.js';
 import upload from '../middleware/multer.js';
 import adminAuth from '../middleware/adminAuth.js';
 
@@ -10,7 +10,14 @@ productRouter.post('/add', adminAuth, upload.fields([{ name: 'image1', maxCount:
 productRouter.post('/remove',adminAuth, remove);
 productRouter.post('/single', singleProductInfo);
 
+// List all products (legacy and root)
 productRouter.get('/list', list)
+productRouter.get('/', list)
 
+// Get products by category
+productRouter.get('/category/:category', getProductsByCategory)
+
+// Get single product by id
+productRouter.get('/:productId', getProductById)
 
 export default productRouter;

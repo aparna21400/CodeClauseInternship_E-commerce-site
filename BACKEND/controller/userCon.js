@@ -11,13 +11,16 @@ const createToken = (id) => {
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-        
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: 'Email and password are required' });
+        }
+
         console.log('🔐 Login attempt:', email);
 
-        // Check if user exists
-        const user = await userModel.findOne({ email });
+        // Check if user exists and include password for comparison
+        const user = await userModel.findOne({ email }).select('+password');
         if (!user) {
-            return res.json({ success: false, message: "User doesn't exist" })
+            return res.status(400).json({ success: false, message: "Invalid email or password" })
         }
 
         // Compare password
@@ -29,12 +32,12 @@ const loginUser = async (req, res) => {
             res.json({ success: true, token })
         } else {
             console.log('❌ Invalid password');
-            res.json({ success: false, message: "Invalid credentials" })
+            res.status(400).json({ success: false, message: "Invalid email or password" })
         }
 
     } catch (error) {
         console.log('❌ Login error:', error);
-        res.json({ success: false, message: error.message })
+        res.status(500).json({ success: false, message: error.message })
     }
 }
 
@@ -45,40 +48,41 @@ const registerUser = async (req, res) => {
 
         console.log('📝 Register attempt:', email);
 
+        // Basic validation
+        if (!name || !email || !password) {
+            return res.status(400).json({ success: false, message: 'Name, email and password are required' });
+        }
+
         // Check if user already exists
         const exists = await userModel.findOne({ email });
         if (exists) {
-            return res.json({ success: false, message: "User already exists" })
+            return res.status(400).json({ success: false, message: "User already exists" })
         }
 
         // Validation
         if (!validator.isEmail(email)) {
-            return res.json({ success: false, message: "Please enter valid email" })
+            return res.status(400).json({ success: false, message: "Please enter valid email" })
         }
         if (password.length < 8) {
-            return res.json({ success: false, message: "Please enter strong password (min 8 characters)" })
+            return res.status(400).json({ success: false, message: "Please enter strong password (min 8 characters)" })
         }
 
-        // Hash password
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(password, salt)
-
-        // Create new user
+        // Create new user (let model pre-save hash the password)
         const newUser = new userModel({
             name,
             email,
-            password: hashedPassword
+            password
         })
         
         const user = await newUser.save()
         const token = createToken(user._id)
 
         console.log('✅ User registered:', email);
-        res.json({ success: true, token })
+        res.status(201).json({ success: true, token })
 
     } catch (error) {
         console.log('❌ Register error:', error);
-        res.json({ success: false, message: error.message })
+        res.status(500).json({ success: false, message: error.message })
     }
 }
 

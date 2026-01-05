@@ -7,7 +7,9 @@ import { ShopContext } from "../Context/ShopContext";
 const ProductDisplay = (props) => {
     const { product } = props;
     const { addToCart } = useContext(ShopContext);
-    const [selectedSize, setSelectedSize] = useState('');
+    // Default to first available size if product defines sizes
+    const sizesAvailable = Array.isArray(product.size) && product.size.length ? product.size : ['S','M','L','XL','XXL'];
+    const [selectedSize, setSelectedSize] = useState(sizesAvailable[0] || '');
 
     if (!product) {
         return <div>Product not found</div>;
@@ -22,7 +24,8 @@ const ProductDisplay = (props) => {
             alert('Please select a size before adding to cart');
             return;
         }
-        addToCart(product.id, selectedSize);
+        // use MongoDB _id to identify product on backend
+        addToCart(product._id || product.id, selectedSize);
         console.log(`Added ${product.name} (Size: ${selectedSize}) to cart`);
     };
 

@@ -84,15 +84,14 @@ const orderSchema = new mongoose.Schema({
   
 }, { timestamps: true });
 
-// Generate unique order number before saving
-orderSchema.pre('save', async function(next) {
+// Generate unique order number before validation so "required" passes
+orderSchema.pre('validate', function() {
   if (!this.orderNumber) {
     // Generate order number: ORD + timestamp + random 4 digits
     const timestamp = Date.now().toString().slice(-8);
     const random = Math.floor(1000 + Math.random() * 9000);
     this.orderNumber = `ORD${timestamp}${random}`;
   }
-  next();
 });
 
 const orderModel = mongoose.models.Order || mongoose.model('Order', orderSchema);

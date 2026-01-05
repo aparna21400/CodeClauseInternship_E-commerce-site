@@ -5,7 +5,7 @@ import { ShopContext } from '../components/Context/ShopContext';
 import './loginSignup.css';
 
 const LoginSignup = () => {
-    const [isLogin, setIsLogin] = useState(true);
+    const [, setIsLogin] = useState(true);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const { setToken } = useContext(ShopContext);
@@ -184,7 +184,7 @@ const LoginSignup = () => {
                                         />
                                     </div>
                                     <div className="signup-link loginsignup-login">
-                                        Not a member? <a href="">Signup now</a>
+                                        Not a member? <a href="#signup" onClick={(e) => { e.preventDefault(); document.querySelector('label.signup')?.click(); }}>Signup now</a>
                                     </div>
                                 </form>
 
@@ -226,7 +226,7 @@ const LoginSignup = () => {
                                         />
                                     </div>
                                     <div className="loginsignup-login">
-                                        Already have account? <a href="">Login now</a>
+                                        Already have account? <a href="#login" onClick={(e) => { e.preventDefault(); document.querySelector('label.login')?.click(); }}>Login now</a>
                                     </div>
                                 </form>
                             </div>

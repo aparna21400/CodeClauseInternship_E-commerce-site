@@ -1,4 +1,5 @@
 import productModel from "../models/product.js";
+import mongoose from 'mongoose';
 import { v2 as cloudinary } from "cloudinary"
 
 // func to add product
@@ -35,7 +36,7 @@ const add = async (req, res) => {
             old_price: Number(old_price),
             new_price: Number(new_price),
             size: parsedSize,
-            image: imageUrl[0]
+            image: imageUrl // store as array to match schema
         }
         console.log(productData);
 
@@ -98,6 +99,10 @@ const singleProductInfo = async (req, res) => {
 const getProductById = async (req, res) => {
     try {
         const { productId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({ success: false, message: 'Invalid product id' });
+        }
+
         const product = await productModel.findById(productId);
         
         if (!product) {

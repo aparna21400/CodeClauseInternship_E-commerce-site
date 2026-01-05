@@ -10,14 +10,40 @@ import productModel from '../models/product.js';
  */
 export const createOrder = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required to place orders'
+      });
+    }
+
     const { shippingAddress, paymentMethod } = req.body;
 
-    // Validate required fields
-    if (!shippingAddress || !paymentMethod) {
+    // Validate required fields exist
+    if (!shippingAddress || typeof shippingAddress !== 'object' || !paymentMethod) {
       return res.status(400).json({
         success: false,
-        message: 'Shipping address and payment method are required'
+        message: 'shippingAddress (object) and paymentMethod are required'
+      });
+    }
+
+    // Validate shipping address structure
+    const requiredAddressFields = ['fullName', 'address', 'city', 'state', 'zipCode', 'country', 'phone'];
+    const missingFields = requiredAddressFields.filter(f => !shippingAddress[f] || String(shippingAddress[f]).trim() === '');
+    if (missingFields.length) {
+      return res.status(400).json({
+        success: false,
+        message: `Missing or empty shipping address fields: ${missingFields.join(', ')}`
+      });
+    }
+
+    // Validate payment method
+    const allowedMethods = ['card', 'cod', 'paypal'];
+    if (!allowedMethods.includes(paymentMethod)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid payment method. Allowed: ${allowedMethods.join(', ')}`
       });
     }
 
@@ -30,7 +56,7 @@ export const createOrder = async (req, res) => {
       });
     }
 
-    // Build order items from cart
+    // Build order items from cart and validate quantities
     const items = [];
     let subtotal = 0;
 
@@ -41,17 +67,25 @@ export const createOrder = async (req, res) => {
         continue;
       }
 
-      for (const size in cart.cartData[productId]) {
-        const quantity = cart.cartData[productId][size];
+      const sizesObj = cart.cartData[productId];
+      for (const size in sizesObj) {
+        const quantity = parseInt(sizesObj[size], 10);
+        if (!Number.isInteger(quantity) || quantity <= 0) {
+          return res.status(400).json({
+            success: false,
+            message: `Invalid quantity for product ${productId} size ${size}`
+          });
+        }
+
         const itemTotal = product.new_price * quantity;
-        
+
         items.push({
           product: productId,
           size,
           quantity,
           price: product.new_price
         });
-        
+
         subtotal += itemTotal;
       }
     }
@@ -71,7 +105,15 @@ export const createOrder = async (req, res) => {
     const order = new orderModel({
       user: userId,
       items,
-      shippingAddress,
+      shippingAddress: {
+        fullName: String(shippingAddress.fullName).trim(),
+        address: String(shippingAddress.address).trim(),
+        city: String(shippingAddress.city).trim(),
+        state: String(shippingAddress.state).trim(),
+        zipCode: String(shippingAddress.zipCode).trim(),
+        country: String(shippingAddress.country).trim(),
+        phone: String(shippingAddress.phone).trim()
+      },
       paymentMethod,
       subtotal,
       shippingFee,
@@ -94,7 +136,7 @@ export const createOrder = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Create order error:', error);
+    console.error('Create order error:', error?.stack || error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to create order'

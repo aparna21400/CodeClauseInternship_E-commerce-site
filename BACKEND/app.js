@@ -23,6 +23,8 @@ app.use(cors())
 // API routes
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter)
+app.use('/api/products', productRouter)
+// Keep singular mount for backward compatibility
 app.use('/api/product', productRouter)
 app.use("/api/cart", cartRouter);
 app.use("/api/orders", orderRouter);

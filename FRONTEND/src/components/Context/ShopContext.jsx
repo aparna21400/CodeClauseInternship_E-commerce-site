@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useCallback } from "react";
 import axios from 'axios'
 
 export const ShopContext = createContext();
@@ -35,7 +35,7 @@ export const ShopContextProvider = ({ children }) => {
     };
 
     // Fetch Cart
-    const fetchCart = async () => {
+    const fetchCart = useCallback(async () => {
         if (!token) return;
 
         try {
@@ -50,7 +50,7 @@ export const ShopContextProvider = ({ children }) => {
         } catch (error) {
             console.log('❌ Fetch cart error:', error.message);
         }
-    };
+    }, [token]);
 
     // Add to Cart
     const addToCart = async (productId, size) => {
@@ -60,21 +60,28 @@ export const ShopContextProvider = ({ children }) => {
         }
 
         try {
-            await axios.post(
+            const res = await axios.post(
                 `${backendUrl}/api/cart/add`,
                 { productId, size },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            setCartItems((prev) => ({
-                ...prev,
-                [productId]: {
-                    ...prev[productId],
-                    [size]: (prev[productId]?.[size] || 0) + 1
-                }
-            }));
+            // Prefer server cartData if returned
+            if (res.data && res.data.cartData) {
+                setCartItems(res.data.cartData);
+            } else {
+                setCartItems((prev) => ({
+                    ...prev,
+                    [productId]: {
+                        ...prev[productId],
+                        [size]: (prev[productId]?.[size] || 0) + 1
+                    }
+                }));
+            }
         } catch (error) {
-            console.log("❌ Add to cart error:", error.message);
+            const msg = error?.response?.data?.message || error.message || 'Add to cart failed';
+            console.log("❌ Add to cart error:", msg);
+            alert(msg);
         }
     };
 
@@ -160,7 +167,7 @@ export const ShopContextProvider = ({ children }) => {
         if (token) {
             fetchCart();
         }
-    }, [token]);
+    }, [token, fetchCart]);
 
     // Step 10: Context Value
     const value = {
