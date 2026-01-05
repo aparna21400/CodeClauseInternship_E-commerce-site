@@ -10,12 +10,10 @@ import productModel from '../models/product.js';
  */
 export const createOrder = async (req, res) => {
   try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: 'Authentication required to place orders'
-      });
+    const userId = req.user?.id || req.user?._id;
+    // Basic validation: must have authenticated user id
+    if (!userId || typeof userId !== 'string' || !/^[0-9a-fA-F]{24}$/.test(userId)) {
+      return res.status(401).json({ success: false, message: 'Authentication required to place orders' });
     }
 
     const { shippingAddress, paymentMethod } = req.body;

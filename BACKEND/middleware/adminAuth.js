@@ -2,22 +2,32 @@ import jwt from 'jsonwebtoken'
 
 const adminAuth = async (req, res, next) => {
     try {
-        const { token } = req.headers
-        if (!token) {
-            return res.json({
-                success: false, message: "Not Authorized login"
-            })
+        // Accept Authorization: Bearer <token> or token header
+        const headerAuth = req.headers['authorization'] || (req.header && req.header('Authorization'));
+        const rawToken = headerAuth ? String(headerAuth).replace(/^\s*bearer\s+/i, '').trim() : (req.headers['token'] || req.headers['x-auth-token'] || null);
+
+        if (!rawToken) {
+            return res.status(401).json({ success: false, message: "Not Authorized" });
         }
-        const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-        if (token_decode !== process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD) {
-            return res.json({
-                success: false, message: "Not Authorized login"
-            })
+
+        let decoded;
+        try {
+            decoded = jwt.verify(rawToken, process.env.JWT_SECRET);
+        } catch (err) {
+            console.log('Admin token verify error:', err);
+            return res.status(401).json({ success: false, message: "Not Authorized" });
         }
+
+        // Admin token may be a plain string payload (legacy); normalize check
+        const expected = String(process.env.ADMIN_EMAIL || '') + String(process.env.ADMIN_PASSWORD || '');
+        if (decoded !== expected && !(decoded && decoded.email === process.env.ADMIN_EMAIL)) {
+            return res.status(401).json({ success: false, message: "Not Authorized" });
+        }
+
         next()
     } catch (error) {
         console.log(error)
-         res.json({ success: false, message: "Not Authorized login" })
+        res.status(401).json({ success: false, message: "Not Authorized" })
     }
 }
 export default adminAuth

@@ -5,10 +5,12 @@ import auth from '../middleware/auth.js';
 
 const orderRouter = express.Router();
 
-// All order routes require authentication
-orderRouter.post('/', auth, createOrder);
-orderRouter.get('/', auth, getUserOrders);
-orderRouter.get('/:orderId', auth, getOrderById);
-orderRouter.get('/number/:orderNumber', auth, getOrderByNumber);
+// Enforce authentication for all order routes
+orderRouter.use(auth);
+
+orderRouter.post('/', createOrder);
+orderRouter.get('/', getUserOrders);
+orderRouter.get('/:orderId', getOrderById);
+orderRouter.get('/number/:orderNumber', getOrderByNumber);
 
 export default orderRouter;
