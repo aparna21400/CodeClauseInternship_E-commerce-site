@@ -9,6 +9,7 @@ import productRouter from './routes/product.js';
 import cartRouter from "./routes/cart.js";
 import authRouter from './routes/auth.js';
 import orderRouter from './routes/orders.js';
+import errorHandler from './middleware/errorHandler.js';
 
 // App config
 const app = express()
@@ -33,5 +34,8 @@ app.use("/api/orders", orderRouter);
 app.get('/', (req, res) => {
   res.send("API WORKING");
 })
+
+// Centralized error handler - must be last middleware
+app.use(errorHandler);
 
 app.listen(port, () => console.log("Server is working on port " + port))

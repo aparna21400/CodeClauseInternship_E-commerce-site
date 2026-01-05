@@ -7,7 +7,7 @@ import productModel from '../models/product.js';
  * POST /api/cart/add
  * Requires: authentication
  */
-export const addToCart = async (req, res) => {
+export const addToCart = async (req, res, next) => {
   try {
     const userId = req.user.id; // user document id
 
@@ -20,22 +20,15 @@ export const addToCart = async (req, res) => {
     if (rawProduct && typeof rawProduct === 'object' && rawProduct._id) productId = String(rawProduct._id);
     else if (rawProduct) productId = String(rawProduct);
 
-    // Minimal log for debugging
-    console.log('addToCart called for user:', userId, 'product:', productId ? productId : 'missing', 'size:', size ? size : 'missing');
-
     // Validate input
     const missing = [];
     if (!productId) missing.push('productId');
     if (!size) missing.push('size');
-    if (missing.length) {
-      return res.status(400).json({ success: false, message: `Missing required fields: ${missing.join(', ')}` });
-    }
+    if (missing.length) return res.status(400).json({ success: false, message: `Missing required fields: ${missing.join(', ')}` });
 
     // Validate product exists (using mongoose's findById which accepts string or ObjectId)
     const product = await productModel.findById(productId);
-    if (!product) {
-      return res.status(404).json({ success: false, message: 'Product not found' });
-    }
+    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
 
     // normalize size key for consistent storage (trimmed)
     const normalizedSize = String(size).trim();
@@ -48,32 +41,24 @@ export const addToCart = async (req, res) => {
 
     // Atomic update using $inc to avoid races and ensure persistence
     const path = `cartData.${productId}.${normalizedSize}`;
-    const updatedCart = await cartModel.findOneAndUpdate(
-      { userId },
-      { $inc: { [path]: 1 }, $setOnInsert: { userId } },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    ).lean();
-
-    console.log('cart after update (live from DB):', JSON.stringify(updatedCart));
+    const updatedCart = await cartModel.findOneAndUpdate({ userId }, { $inc: { [path]: 1 }, $setOnInsert: { userId } }, { upsert: true, new: true, setDefaultsOnInsert: true }).lean();
 
     res.json({ success: true, message: "Added to cart", cartData: updatedCart.cartData });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    error.statusCode = error.statusCode || 500;
+    next(error);
   }
 };
 
 // Step 2: Fix removeFromCart
-export const removeFromCart = async (req, res) => {
+export const removeFromCart = async (req, res, next) => {
   try {
     const userId = req.user.id; // ✅ Fixed
     const { productId, size } = req.body;
 
     let cart = await cartModel.findOne({ userId });
 
-    if (!cart) {
-      return res.json({ success: false, message: "Cart not found" });
-    }
+    if (!cart) return res.status(404).json({ success: false, message: "Cart not found" });
 
     const normalizedSize = String(size).trim();
     if (cart.cartData[productId] && cart.cartData[productId][normalizedSize]) {
@@ -91,23 +76,20 @@ export const removeFromCart = async (req, res) => {
     await cart.save();
     res.json({ success: true, message: "Removed from cart" });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    error.statusCode = error.statusCode || 500;
+    next(error);
   }
 };
 
 // Step 3: Fix getCart
-export const getCart = async (req, res) => {
+export const getCart = async (req, res, next) => {
   try {
     const userId = req.user.id; // ✅ Fixed
     const cart = await cartModel.findOne({ userId });
 
-    res.json({
-      success: true,
-      cartData: cart ? cart.cartData : {},
-    });
+    res.json({ success: true, cartData: cart ? cart.cartData : {} });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    error.statusCode = error.statusCode || 500;
+    next(error);
   }
 };

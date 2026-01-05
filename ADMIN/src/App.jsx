@@ -8,14 +8,15 @@ import Orders from './pages/Orders'
 import Login from './component/Login'
 import { ToastContainer } from 'react-toastify';
 
-export const backendUrl = import.meta.env.VITE_BACKEND_URL
-export const currency = '$'
+export const backendUrl = String(import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000').replace(/^['"]|['"]$/g, '').trim();
+export const currency = '$' 
 const App = () => {
 
   const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : '');
 
   useEffect(() => {
     localStorage.setItem('token', token)
+    console.log('Admin App running — backendUrl=', backendUrl, 'token present=', !!token)
   }, [token])
 
 

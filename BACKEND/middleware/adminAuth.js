@@ -14,7 +14,6 @@ const adminAuth = async (req, res, next) => {
         try {
             decoded = jwt.verify(rawToken, process.env.JWT_SECRET);
         } catch (err) {
-            console.log('Admin token verify error:', err);
             return res.status(401).json({ success: false, message: "Not Authorized" });
         }
 

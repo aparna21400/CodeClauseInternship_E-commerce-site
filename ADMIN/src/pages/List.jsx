@@ -9,21 +9,25 @@ const List = ({ token }) => {
 
   const fetchList = async () => {
     try {
-      const response = await axios.get(backendUrl + '/api/product/list')
+      console.log('Requesting product list from', backendUrl + '/api/product/list');
+      const response = await axios.get(backendUrl + '/api/product/list', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+      console.log('Product list response:', response.status);
       if (response.data.success) {
         setList(response.data.products);
       } else {
         toast.error(response.data.message)
       }
     } catch (error) {
-      console.log(error);
+      console.log('Fetch list error:', error?.response?.status, error?.response?.data || error.message);
       toast.error(error.message)
     }
   }
 
   const removeProduct = async (id) => {
     try {
-      const response = await axios.post(backendUrl + '/api/product/remove', { id }, { headers: { token } })
+      console.log('Removing product', id, 'via', backendUrl + '/api/product/remove');
+      const response = await axios.post(backendUrl + '/api/product/remove', { id }, { headers: { Authorization: `Bearer ${token}` } })
+      console.log('Remove product response:', response.status, response.data?.message || 'no message');
       if (response.data.success) {
         toast.success(response.data.message)
         await fetchList();
@@ -33,7 +37,7 @@ const List = ({ token }) => {
       }
 
     } catch (error) {
-      console.log(error)
+      console.log('Remove product error:', error?.response?.status, error?.response?.data || error.message)
       toast.error(error.message)
     }
   }

@@ -9,21 +9,46 @@ const Login = ({ setToken }) => {
     const [password, setPassword] = useState("");
 
     const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            e.preventDefault();
-            const response = await axios.post(backendUrl + '/api/user/admin', { email, password })
-            if (response.data.success) {
-                setToken(response.data.token)
+            // Try regular auth login first (returns user object with role)
+            console.log('Auth attempt: POST', backendUrl + '/api/auth/login');
+            const response = await axios.post(backendUrl + '/api/auth/login', { email, password });
+            console.log('Auth login response:', response.status, response.data?.message || 'ok');
+
+            if (response.data?.success && response.data.user?.role === 'admin') {
+                console.log('Logged in as admin via /api/auth/login');
+                setToken(response.data.token);
+                return;
+            }
+
+            // Fallback to legacy admin login
+            console.log('Falling back to admin login: POST', backendUrl + '/api/user/admin');
+            const legacy = await axios.post(backendUrl + '/api/user/admin', { email, password });
+            console.log('Admin login response:', legacy.status, legacy.data?.message || 'ok');
+
+            if (legacy.data.success) {
+                setToken(legacy.data.token)
             } else {
-                toast.error(response.data.message)
+                toast.error(legacy.data.message)
             }
 
         } catch (error) {
-            console.log(error);
-            toast.error(error.message);
-
+            console.log('Login error:', error?.response?.status, error?.response?.data || error.message);
+            // try legacy admin login if auth failed with network/401
+            try {
+                const legacy = await axios.post(backendUrl + '/api/user/admin', { email, password });
+                if (legacy.data.success) {
+                    setToken(legacy.data.token)
+                } else {
+                    toast.error(legacy.data.message || 'Login failed')
+                }
+            } catch (err2) {
+                console.log('Legacy admin login error:', err2?.response?.status, err2?.response?.data || err2.message);
+                toast.error(err2?.response?.data?.message || err2.message || 'Login failed')
+            }
         }
-    };
+    }; 
     return (
         <div style={{
             minHeight: '100vh',
