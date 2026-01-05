@@ -1,9 +1,14 @@
-import cartModel from "../models/cart.js";
+// BACKEND/controller/cartCon.js
+import cartModel from '../models/cart.js';
 
-
+/**
+ * Add item to cart
+ * POST /api/cart/add
+ * Requires: authentication
+ */
 export const addToCart = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.id; // ✅ Changed from req.userId to req.user.id
     const { productId, size } = req.body;
 
     if (!productId || !size) {
@@ -12,7 +17,6 @@ export const addToCart = async (req, res) => {
 
     let cart = await cartModel.findOne({ userId });
 
-    // If cart does not exist, create new
     if (!cart) {
       cart = await cartModel.create({
         userId,
@@ -42,10 +46,10 @@ export const addToCart = async (req, res) => {
   }
 };
 
-
+// Step 2: Fix removeFromCart
 export const removeFromCart = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.id; // ✅ Fixed
     const { productId, size } = req.body;
 
     let cart = await cartModel.findOne({ userId });
@@ -54,10 +58,7 @@ export const removeFromCart = async (req, res) => {
       return res.json({ success: false, message: "Cart not found" });
     }
 
-    if (
-      cart.cartData[productId] &&
-      cart.cartData[productId][size]
-    ) {
+    if (cart.cartData[productId] && cart.cartData[productId][size]) {
       cart.cartData[productId][size] -= 1;
 
       if (cart.cartData[productId][size] <= 0) {
@@ -77,9 +78,10 @@ export const removeFromCart = async (req, res) => {
   }
 };
 
+// Step 3: Fix getCart
 export const getCart = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user.id; // ✅ Fixed
     const cart = await cartModel.findOne({ userId });
 
     res.json({

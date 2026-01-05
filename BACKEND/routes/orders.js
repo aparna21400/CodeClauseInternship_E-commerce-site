@@ -1,21 +1,14 @@
-const express = require('express');
-const Order = require('../models/orders');
-const auth = require('../middleware/auth');
+// BACKEND/routes/orders.js
+import express from 'express';
+import { createOrder, getUserOrders, getOrderById, getOrderByNumber } from '../controller/orderCon.js';
+import auth from '../middleware/auth.js';
 
-const router = express.Router();
+const orderRouter = express.Router();
 
-// Create order (from cart)
-router.post('/', auth, async (req, res) => {
-  const { products, total } = req.body;
-  const order = new Order({ user: req.user.id, products, total });
-  await order.save();
-  res.status(201).json(order);
-});
+// All order routes require authentication
+orderRouter.post('/', auth, createOrder);
+orderRouter.get('/', auth, getUserOrders);
+orderRouter.get('/:orderId', auth, getOrderById);
+orderRouter.get('/number/:orderNumber', auth, getOrderByNumber);
 
-// Get user's orders
-router.get('/', auth, async (req, res) => {
-  const orders = await Order.find({ user: req.user.id }).populate('products.product');
-  res.json(orders);
-});
-
-module.exports = router;
+export default orderRouter;

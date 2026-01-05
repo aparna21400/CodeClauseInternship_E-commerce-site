@@ -1,8 +1,15 @@
-const express = require('express');
-const { register, login } = require('../controller/auth');
-const router = express.Router();
+// BACKEND/routes/auth.js
+import express from 'express';
+import { register, login, getProfile } from '../controller/auth.js';
+import auth from '../middleware/auth.js';
 
-router.post('/register', register);
-router.post('/login', login);
+const authRouter = express.Router();
 
-module.exports = router;
+// Public routes
+authRouter.post('/register', register);
+authRouter.post('/login', login);
+
+// Protected route - requires authentication
+authRouter.get('/profile', auth, getProfile);
+
+export default authRouter;

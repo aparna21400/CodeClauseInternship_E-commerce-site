@@ -7,7 +7,7 @@ const productSchema = new mongoose.Schema({
     category: { type: String, required: true },
     description: { type: String, required: true },
     size: { type: Array, required: true },
-});
+}, { timestamps: true });
 
 const productModel = mongoose.models.product || mongoose.model('Product', productSchema);
 

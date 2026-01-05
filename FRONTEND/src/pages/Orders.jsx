@@ -7,7 +7,6 @@ const Orders = () => {
   return (
     <div className="orders container">
       <h1>My Orders</h1>
-      {/* Mock order data - replace with API later */}
       <div className="order-item">
         <div className="order-details">
           <p>Order #1234 - Dec 30, 2025</p>

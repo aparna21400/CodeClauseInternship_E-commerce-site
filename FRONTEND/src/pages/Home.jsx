@@ -4,7 +4,7 @@ import Popular from "../components/Popular/Popular";
 import Offers from "../components/Offer/Offers";
 import NewCollections from "../components/NewCollections/NewCollections"
 import NewsLetter from "../components/NewsLetter/NewsLetter"
-import OurPolicy from "../components/Ourpolicy/OurPolicy"
+// import OurPolicy from "../components/Ourpolicy/OurPolicy"
 
 const Home = () => {
 
@@ -14,7 +14,7 @@ const Home = () => {
             <Popular />
             <Offers />
             <NewCollections />
-            <OurPolicy />
+            {/* <OurPolicy /> */}
             <NewsLetter />
         </div>
     )
