@@ -2,14 +2,11 @@
 import cartModel from '../models/cart.js';
 import productModel from '../models/product.js';
 
-/**
- * Add item to cart
- * POST /api/cart/add
- * Requires: authentication
- */
 export const addToCart = async (req, res, next) => {
   try {
     const userId = req.user.id; // user document id
+
+    console.log('📦 Add to cart request:', { userId, body: req.body }); 
 
     // Accept multiple possible incoming fields from frontend
     let rawProduct = req.body.product || req.body.productId || req.body.id || req.body._id || (req.body.product && req.body.product._id);
@@ -84,7 +81,7 @@ export const removeFromCart = async (req, res, next) => {
 // Step 3: Fix getCart
 export const getCart = async (req, res, next) => {
   try {
-    const userId = req.user.id; // ✅ Fixed
+    const userId = req.user.id; 
     const cart = await cartModel.findOne({ userId });
 
     res.json({ success: true, cartData: cart ? cart.cartData : {} });

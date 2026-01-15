@@ -1,27 +1,27 @@
-// FRONTEND/src/pages/Checkout.jsx
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShopContext } from '../components/Context/ShopContext';
 import axios from 'axios';
 import './CSS/Checkout.css';
 
 const Checkout = () => {
-  const { 
-    getCartItemsWithDetails, 
-    getTotalCartAmount, 
+  const {
+    getCartItemsWithDetails,
+    getTotalCartAmount,
     token,
-    fetchCart 
+    fetchCart // ✅ make sure this comes from ShopContext
   } = useContext(ShopContext);
+
   const navigate = useNavigate();
   const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
 
-  // Get cart items and calculate totals
+  // Get cart items and totals
   const cartItems = getCartItemsWithDetails();
   const subtotal = getTotalCartAmount();
   const shippingFee = subtotal >= 50 ? 0 : 5;
   const total = subtotal + shippingFee;
 
-  // Form state for shipping address
+  // Shipping form state
   const [shippingAddress, setShippingAddress] = useState({
     fullName: '',
     address: '',
@@ -34,26 +34,41 @@ const Checkout = () => {
 
   // Payment method state
   const [paymentMethod, setPaymentMethod] = useState('cod');
-  
+
   // Loading and error states
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Handle input changes
+  // Verify backend cart on load
+  useEffect(() => {
+    const verifyBackendCart = async () => {
+      if (!token) return;
+
+      try {
+        const res = await axios.get(`${backendUrl}/api/cart/get`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log('🔍 Backend cart data:', res.data.cartData);
+        if (!res.data.cartData || Object.keys(res.data.cartData).length === 0) {
+          console.warn('⚠️ Backend cart is empty!');
+        }
+      } catch (err) {
+        console.error('❌ Failed to fetch backend cart:', err.response?.data || err.message);
+      }
+    };
+
+    verifyBackendCart();
+  }, [token, backendUrl]);
+
+  // Input change handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setShippingAddress(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setShippingAddress(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handle payment method change
-  const handlePaymentChange = (method) => {
-    setPaymentMethod(method);
-  };
+  const handlePaymentChange = (method) => setPaymentMethod(method);
 
-  // Validate form
+  // Form validation
   const validateForm = () => {
     const requiredFields = ['fullName', 'address', 'city', 'state', 'zipCode', 'country', 'phone'];
     for (let field of requiredFields) {
@@ -65,13 +80,18 @@ const Checkout = () => {
     return true;
   };
 
-  // Handle place order
+  // Place order
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    // Check authentication
+    if (cartItems.length === 0) {
+      setError('Your cart is empty. Please add items before placing order.');
+      setLoading(false);
+      return;
+    }
+
     if (!token) {
       setError('Please login to place an order');
       setLoading(false);
@@ -79,32 +99,23 @@ const Checkout = () => {
       return;
     }
 
-    // Validate form
     if (!validateForm()) {
       setLoading(false);
       return;
     }
 
     try {
-      // Create order via API
       const response = await axios.post(
         `${backendUrl}/api/orders`,
-        {
-          shippingAddress,
-          paymentMethod
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
+        { shippingAddress, paymentMethod },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.data.success) {
-        // Clear cart from context
-        await fetchCart();
-        
-        // Navigate to order success page with order ID
+        // ✅ Use fetchCart from context to refresh cart after order
+        if (fetchCart) await fetchCart();
+
+        // Navigate to order success
         navigate('/order-success', {
           state: {
             orderNumber: response.data.order.orderNumber,
@@ -122,7 +133,7 @@ const Checkout = () => {
     }
   };
 
-  // Redirect if cart is empty
+  // Redirect if local cart is empty
   if (cartItems.length === 0) {
     return (
       <div className="checkout-container">
@@ -140,199 +151,68 @@ const Checkout = () => {
       <div className="checkout-wrapper">
         <h1 className="checkout-title">Checkout</h1>
 
-        {/* Error message */}
-        {error && (
-          <div className="checkout-error">
-            <p>{error}</p>
-          </div>
-        )}
+        {error && <div className="checkout-error"><p>{error}</p></div>}
 
         <div className="checkout-content">
-          {/* Left side - Shipping Form */}
+          {/* Shipping Form */}
           <div className="checkout-form-section">
             <h2>Shipping Details</h2>
-            <form onSubmit={handlePlaceOrder}>
-              <div className="form-group">
-                <label htmlFor="fullName">Full Name *</label>
+            {['fullName','address','city','state','zipCode','country','phone'].map((field) => (
+              <div className="form-group" key={field}>
+                <label htmlFor={field}>{field.replace(/([A-Z])/g, ' $1')} *</label>
                 <input
-                  type="text"
-                  id="fullName"
-                  name="fullName"
-                  value={shippingAddress.fullName}
+                  type={field === 'phone' ? 'tel' : 'text'}
+                  id={field}
+                  name={field}
+                  value={shippingAddress[field]}
                   onChange={handleInputChange}
                   required
-                  placeholder="John Doe"
+                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
                 />
               </div>
+            ))}
 
-              <div className="form-group">
-                <label htmlFor="address">Address *</label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  value={shippingAddress.address}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="123 Main Street"
-                />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="city">City *</label>
+            {/* Payment */}
+            <div className="payment-section">
+              <h2>Payment Method</h2>
+              {['cod','card','paypal'].map((method) => (
+                <label key={method} className={`payment-option ${paymentMethod === method ? 'active' : ''}`}>
                   <input
-                    type="text"
-                    id="city"
-                    name="city"
-                    value={shippingAddress.city}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="New York"
+                    type="radio"
+                    name="paymentMethod"
+                    value={method}
+                    checked={paymentMethod === method}
+                    onChange={(e) => handlePaymentChange(e.target.value)}
                   />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="state">State *</label>
-                  <input
-                    type="text"
-                    id="state"
-                    name="state"
-                    value={shippingAddress.state}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="NY"
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="zipCode">Zip Code *</label>
-                  <input
-                    type="text"
-                    id="zipCode"
-                    name="zipCode"
-                    value={shippingAddress.zipCode}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="10001"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="country">Country *</label>
-                  <input
-                    type="text"
-                    id="country"
-                    name="country"
-                    value={shippingAddress.country}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="United States"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="phone">Phone Number *</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={shippingAddress.phone}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="+1 234 567 8900"
-                />
-              </div>
-
-              {/* Payment Method Selection */}
-              <div className="payment-section">
-                <h2>Payment Method</h2>
-                <div className="payment-options">
-                  <label className={`payment-option ${paymentMethod === 'cod' ? 'active' : ''}`}>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="cod"
-                      checked={paymentMethod === 'cod'}
-                      onChange={(e) => handlePaymentChange(e.target.value)}
-                    />
-                    <span>Cash on Delivery</span>
-                  </label>
-
-                  <label className={`payment-option ${paymentMethod === 'card' ? 'active' : ''}`}>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="card"
-                      checked={paymentMethod === 'card'}
-                      onChange={(e) => handlePaymentChange(e.target.value)}
-                    />
-                    <span>Credit/Debit Card</span>
-                  </label>
-
-                  <label className={`payment-option ${paymentMethod === 'paypal' ? 'active' : ''}`}>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="paypal"
-                      checked={paymentMethod === 'paypal'}
-                      onChange={(e) => handlePaymentChange(e.target.value)}
-                    />
-                    <span>PayPal</span>
-                  </label>
-                </div>
-              </div>
-
-              <button 
-                type="submit" 
-                className="place-order-btn"
-                disabled={loading}
-              >
-                {loading ? 'Placing Order...' : 'Place Order'}
-              </button>
-            </form>
-          </div>
-
-          {/* Right side - Order Summary */}
-          <div className="checkout-summary-section">
-            <h2>Order Summary</h2>
-            
-            <div className="order-items">
-              {cartItems.map((item, index) => (
-                <div key={`${item.id}-${item.size}-${index}`} className="order-item">
-                  <img 
-                    src={item.productInfo?.image} 
-                    alt={item.productInfo?.name}
-                    className="order-item-image"
-                  />
-                  <div className="order-item-details">
-                    <h4>{item.productInfo?.name}</h4>
-                    <p>Size: {item.size}</p>
-                    <p>Qty: {item.quantity}</p>
-                    <p className="order-item-price">
-                      ${(item.productInfo?.new_price * item.quantity).toFixed(2)}
-                    </p>
-                  </div>
-                </div>
+                  <span>{method === 'cod' ? 'Cash on Delivery' : method === 'card' ? 'Credit/Debit Card' : 'PayPal'}</span>
+                </label>
               ))}
             </div>
 
+            <button type="button" onClick={handlePlaceOrder} className="place-order-btn" disabled={loading}>
+              {loading ? 'Placing Order...' : 'Place Order'}
+            </button>
+          </div>
+
+          {/* Order Summary */}
+          <div className="checkout-summary-section">
+            <h2>Order Summary</h2>
+            {cartItems.map((item, idx) => (
+              <div key={`${item.id}-${item.size}-${idx}`} className="order-item">
+                <img src={item.productInfo?.image} alt={item.productInfo?.name} className="order-item-image" />
+                <div className="order-item-details">
+                  <h4>{item.productInfo?.name}</h4>
+                  <p>Size: {item.size}</p>
+                  <p>Qty: {item.quantity}</p>
+                  <p className="order-item-price">${(item.productInfo?.new_price * item.quantity).toFixed(2)}</p>
+                </div>
+              </div>
+            ))}
+
             <div className="order-totals">
-              <div className="total-row">
-                <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="total-row">
-                <span>Shipping</span>
-                <span>{shippingFee === 0 ? 'Free' : `$${shippingFee.toFixed(2)}`}</span>
-              </div>
-              <div className="total-row final-total">
-                <span>Total</span>
-                <span>${total.toFixed(2)}</span>
-              </div>
+              <div className="total-row"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+              <div className="total-row"><span>Shipping</span><span>{shippingFee === 0 ? 'Free' : `$${shippingFee.toFixed(2)}`}</span></div>
+              <div className="total-row final-total"><span>Total</span><span>${total.toFixed(2)}</span></div>
             </div>
           </div>
         </div>

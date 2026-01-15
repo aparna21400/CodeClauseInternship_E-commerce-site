@@ -1,10 +1,6 @@
 // BACKEND/models/orders.js
 import mongoose from 'mongoose';
 
-/**
- * Order Schema
- * Stores order information including shipping details, payment method, and items
- */
 const orderSchema = new mongoose.Schema({
   // User who placed the order
   user: { 
@@ -87,7 +83,6 @@ const orderSchema = new mongoose.Schema({
 // Generate unique order number before validation so "required" passes
 orderSchema.pre('validate', function() {
   if (!this.orderNumber) {
-    // Generate order number: ORD + timestamp + random 4 digits
     const timestamp = Date.now().toString().slice(-8);
     const random = Math.floor(1000 + Math.random() * 9000);
     this.orderNumber = `ORD${timestamp}${random}`;

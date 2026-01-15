@@ -11,14 +11,6 @@ const cartSchema = new mongoose.Schema(
     cartData: {
       type: Object,
       default: {},
-      /*
-        Structure:
-        {
-          productId: {
-            size: quantity
-          }
-        }
-      */
     },
   },
   { timestamps: true }

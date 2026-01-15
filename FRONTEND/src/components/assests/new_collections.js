@@ -1,66 +1,57 @@
-import p1_img from "./product_12.png";
-import p2_img from "./product_35.png";
-import p3_img from "./product_14.png";
-import p4_img from "./product_8.png";
-import p5_img from "./product_15.png";
-import p6_img from "./product_2.png";
-import p7_img from "./product_17.png";
-import p8_img from "./product_28.png";
-
 let new_collections = [
   {
     id: 12,
     name: "Women Blue Solid Top",
-    image: p1_img,
+    image: "https://res.cloudinary.com/dijumyrxb/image/upload/v1768429829/product_12_ygaps5.png",
     new_price: 50.0,
     old_price: 80.5,
   },
   {
     id: 35,
     name: "Boys Baseball Cap Set",
-    image: p2_img,
+    image: "https://res.cloudinary.com/dijumyrxb/image/upload/v1768429857/product_35_hsverr.png",
     new_price: 85.0,
     old_price: 120.5,
   },
   {
     id: 14,
     name: "Men Lightweight Puffer Jacket with Patchwork",
-    image: p3_img,
+    image: "https://res.cloudinary.com/dijumyrxb/image/upload/v1768429832/product_15_gggjhu.png",
     new_price: 60.0,
     old_price: 100.5,
   },
   {
     id: 8,
     name: "Floral Print Puff Sleeve Georgette Crop Top",
-    image: p4_img,
+    image: "https://res.cloudinary.com/dijumyrxb/image/upload/v1768429823/product_8_ualsea.png",
     new_price: 100.0,
     old_price: 150.0,
   },
   {
     id: 15,
     name: "Men Camouflage Polyester Lightweight Outdoor Sporty Jacket",
-    image: p5_img,
+    image: "https://res.cloudinary.com/dijumyrxb/image/upload/v1768429832/product_15_gggjhu.png",
     new_price: 50.0,
     old_price: 80.5,
   },
   {
     id: 2,
     name: "Women Square Neck Regular Top",
-    image: p6_img,
+    image: "https://res.cloudinary.com/dijumyrxb/image/upload/v1768429774/product_2_bjnxk0.png",
     new_price: 85.0,
     old_price: 120.5,
   },
   {
     id: 17,
     name: "Men Denim Jacket",
-    image: p7_img,
+    image: "https://res.cloudinary.com/dijumyrxb/image/upload/v1768429836/product_17_havxnz.png",
     new_price: 60.0,
     old_price: 100.5,
   },
   {
     id: 28,
     name: "Kids Dinasuar Patchwork Overalls",
-    image: p8_img,
+    image: "https://res.cloudinary.com/dijumyrxb/image/upload/v1768429849/product_28_iyrx9j.png",
     new_price: 100.0,
     old_price: 150.0,
   },

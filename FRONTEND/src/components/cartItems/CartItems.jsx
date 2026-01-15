@@ -2,13 +2,16 @@ import React, { useContext } from 'react';
 import './cartItems.css';
 import { ShopContext } from '../Context/ShopContext';
 import remove_icon from '../assests/cart_cross_icon.png';
+import { useNavigate } from 'react-router-dom';
 
 const CartItems = () => {
+  const navigate = useNavigate();
+
   const { getTotalCartAmount, cartItems, removeFromCart, getCartItemsWithDetails } = useContext(ShopContext);
 
   const cartItemsWithDetails = getCartItemsWithDetails();
 
-  if (cartItems.length === 0) {
+  if (Object.keys(cartItems).length === 0) {
     return (
       <div className='cartItems container'>
         <div className="cart-empty">
@@ -31,12 +34,12 @@ const CartItems = () => {
         <p>Remove</p>
       </div>
       <hr />
-      
+
       {cartItemsWithDetails.map((cartItem, index) => {
         const { productInfo, size, quantity, id } = cartItem;
-        
+
         if (!productInfo) {
-          return null; 
+          return null;
         }
 
         return (
@@ -48,10 +51,10 @@ const CartItems = () => {
               <p className="cart-item-size">{size}</p>
               <button className='cartitems-quantity'>{quantity}</button>
               <p>${(productInfo.new_price * quantity).toFixed(2)}</p>
-              <img 
-                src={remove_icon} 
-                onClick={() => removeFromCart(id, size)} 
-                alt="Remove item" 
+              <img
+                src={remove_icon}
+                onClick={() => removeFromCart(id, size)}
+                alt="Remove item"
                 style={{ cursor: 'pointer' }}
               />
             </div>
@@ -79,7 +82,9 @@ const CartItems = () => {
               <h3>${getTotalCartAmount().toFixed(2)}</h3>
             </div>
           </div>
-          <button>PROCEED TO CHECKOUT</button>
+          <button onClick={() => navigate('/checkout')}>
+            PROCEED TO CHECKOUT
+          </button>
         </div>
         <div className="cartitems-promocode">
           <p>If you have a promo code, Enter it here</p>

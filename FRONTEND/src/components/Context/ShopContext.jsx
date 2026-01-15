@@ -23,12 +23,12 @@ export const ShopContextProvider = ({ children }) => {
 
             if (res.data.success) {
                 setProducts(res.data.products);
-                console.log("✅ Products loaded:", res.data.products.length);
+                console.log("Products loaded:", res.data.products.length);
             } else {
-                console.error("❌ Failed:", res.data.message);
+                console.error("Failed:", res.data.message);
             }
         } catch (error) {
-            console.error("❌ Fetch products error:", error.message);
+            console.error("Fetch products error:", error.message);
         } finally {
             setLoading(false);
         }
@@ -48,7 +48,7 @@ export const ShopContextProvider = ({ children }) => {
                 setCartItems(res.data.cartData);
             }
         } catch (error) {
-            console.log('❌ Fetch cart error:', error.message);
+            console.log('Fetch cart error:', error.message);
         }
     }, [token]);
 
@@ -59,36 +59,34 @@ export const ShopContextProvider = ({ children }) => {
             return;
         }
 
+        console.log('Adding to cart:', { productId, size }); 
+
         try {
             const res = await axios.post(
                 `${backendUrl}/api/cart/add`,
-                { productId, size },
+                { productId, size }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            // Prefer server cartData if returned
-            if (res.data && res.data.cartData) {
-                setCartItems(res.data.cartData);
+            console.log(' Add to cart response:', res.data); 
+
+            // Always fetch fresh cart from backend after adding
+            if (res.data.success) {
+                await fetchCart(); 
             } else {
-                setCartItems((prev) => ({
-                    ...prev,
-                    [productId]: {
-                        ...prev[productId],
-                        [size]: (prev[productId]?.[size] || 0) + 1
-                    }
-                }));
+                alert(res.data.message || 'Failed to add to cart');
             }
         } catch (error) {
+            console.error(' Add to cart error:', error.response?.data || error.message); // ✅ ADDED
             const msg = error?.response?.data?.message || error.message || 'Add to cart failed';
-            console.log("❌ Add to cart error:", msg);
             alert(msg);
         }
     };
 
     //Remove from Cart
-     const removeFromCart = async (productId, size) => {
+    const removeFromCart = async (productId, size) => {
         if (!token) return;
-        
+
         try {
             await axios.post(
                 `${backendUrl}/api/cart/remove`,
@@ -172,7 +170,7 @@ export const ShopContextProvider = ({ children }) => {
     // Step 10: Context Value
     const value = {
         products,
-        all_product: products, 
+        all_product: products,
         cartItems,
         token,
         setToken,
